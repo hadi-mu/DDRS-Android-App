@@ -120,7 +120,7 @@ class Classifier(private val context: Context) {
         var index = getMaxResult(output[0],confidence)
         var result = "${labels[index]}\n"
 
-        drowsyLabel.text="State:$result"
+        drowsyLabel.text=result
 
         return index
     }

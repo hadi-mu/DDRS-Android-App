@@ -75,7 +75,6 @@ class MainActivity : AppCompatActivity() {
     ).build()
     val faceDetector = FaceDetection.getClient(highAccuracyOpts)
 
-    var mMediaPlayer: MediaPlayer? = null
 
     val Logs = LogTools(this@MainActivity)
 
@@ -203,11 +202,9 @@ class MainActivity : AppCompatActivity() {
         val now= Calendar.getInstance()
         val hour=now.get(Calendar.HOUR_OF_DAY)
         Logs.logLevel2Drowsiness(hour)
-        if (mMediaPlayer == null) {
-            mMediaPlayer = MediaPlayer.create(this, ALARMLIST[alarm])
-            mMediaPlayer!!.isLooping = false
-            mMediaPlayer!!.start()
-        } else mMediaPlayer!!.start()
+        val mMediaPlayer = MediaPlayer.create(this, ALARMLIST[alarm])
+        mMediaPlayer!!.isLooping = false
+        mMediaPlayer!!.start()
 
 
 
