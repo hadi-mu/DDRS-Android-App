@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:layout_width="100dp"
+        android:defaultValue="1"
+        android:entries="@array/settings_alarm_list_preference_titles"
+        android:entryValues="@array/settings_alarm_list_preference_values"
+        android:key="alarmPreference"
+        android:summary="Choose your alarm"
+        android:title="Alarm Choice" />
+    <EditTextPreference
+        android:defaultValue="5"
+        android:key="triggerPreference"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:summary="Choose number of triggers before you have to pull over"
+        android:title="Number of Triggers" />
+    <ListPreference
+        android:defaultValue="default"
+        android:entries="@array/settings_colour_list_preference_titles"
+        android:entryValues="@array/settings_colour_list_preference_values"
+        android:key="backgroundColourPreference"
+        android:title="Background Colour Choice" />
+    <EditTextPreference
+        android:defaultValue="petrol station"
+        android:key="directionsPreference"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:summary="Click to choose where you are directed to"
+        android:title="Rest Directions Choice" />
+</PreferenceScreen>
