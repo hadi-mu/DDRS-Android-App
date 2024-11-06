@@ -15,6 +15,7 @@ import android.os.Bundle
 import android.os.SystemClock
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
@@ -29,6 +30,10 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -40,15 +45,13 @@ class MainActivity : AppCompatActivity() {
 
     var triggerLimit = 5 //initialise value for limit of triggers until level 3 drowsiness
 
-    var backgroundColor="#2E334A"//initial background colour
+    val ALARMLIST = arrayListOf(R.raw.alarm1, R.raw.alarm2, R.raw.alarm3, R.raw.alarm4)
 
-    val ALARMLIST= arrayListOf(R.raw.alarm1,R.raw.alarm2,R.raw.alarm3,R.raw.alarm4)
+    var alarm = 1//initial alarm sound
 
-    var alarm=1//initial alarm sound
+    var directionsTo = "petrol station"
 
-    var directionsTo="petrol station"
-
-    val coloursArray= arrayListOf<Int>(
+    val coloursArray = arrayListOf<Int>(
         Color.BLACK,
         Color.BLUE,
         Color.CYAN,
@@ -65,6 +68,7 @@ class MainActivity : AppCompatActivity() {
     private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
 
     var runAnalysis: Boolean = false
+
     private var triggers = 0
 
     var classifier: Classifier = Classifier(this@MainActivity)
@@ -98,14 +102,14 @@ class MainActivity : AppCompatActivity() {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 
-        classifier.initialize().addOnSuccessListener { Log.d("Classifier", "Initialised")}
+        classifier.initialize().addOnSuccessListener { Log.d("Classifier", "Initialised") }
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        val firstStart=prefs.getBoolean("firstRun",true)
+        val firstStart = prefs.getBoolean("firstRun", true)
         val editor = prefs.edit()
-        if(firstStart) {
+        if (firstStart) {
             Logs.createLogs()
-            editor.putBoolean("firstRun",false)
+            editor.putBoolean("firstRun", false)
             editor.apply()
 
         }
@@ -138,8 +142,8 @@ class MainActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun setUpPreferences(){
-        val preferences=PreferenceManager.getDefaultSharedPreferences(this)
+    fun setUpPreferences() {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
         preferences.registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener)
 
     }
@@ -154,13 +158,14 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    val sharedPreferenceChangeListener:SharedPreferences.OnSharedPreferenceChangeListener =
+    val sharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener =
         SharedPreferences.OnSharedPreferenceChangeListener { sharedPref, key ->
             Log.d(key.toString(), "Changed")
-            when(key){
+            when (key) {
                 "triggerPreference" -> {
                     triggerLimit = sharedPref.getString(key, "5")?.toInt() ?: 5
                 }
+
                 "backgroundColourPreference" -> {
                     try {
                         val colorNo = sharedPref.getString(key, "3027786")?.toInt() ?: 1
@@ -169,51 +174,66 @@ class MainActivity : AppCompatActivity() {
                         println(e.toString())
                     }
                 }
+
                 "directionsPreference" -> {
-                        directionsTo= sharedPref.getString(key, "petrol station").toString()
+                    directionsTo = sharedPref.getString(key, "petrol station").toString()
                 }
-                "alarmPreference" ->{
-                    alarm= (sharedPref.getString(key, "1")?.toInt() ?: 1)-1
+
+                "alarmPreference" -> {
+                    alarm = (sharedPref.getString(key, "1")?.toInt() ?: 1) - 1
                 }
             }
 
         }
 
 
-    fun settingsButtonPressed(V: View){
+    fun settingsButtonPressed(V: View) {
         val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
 
     }
 
-    fun logButtonPressed(V: View){
+    fun logButtonPressed(V: View) {
         val intent = Intent(this, com.example.testapp.LogActivity::class.java)
         startActivity(intent)
 
     }
 
+    fun startStopButtonPressed(view: View) {
+        runAnalysis = !runAnalysis
 
-    fun stopButtonPressed(V: View) {
-        triggers=0
-        runAnalysis = false
+        val button: Button = findViewById<Button>(R.id.startStopButton)
+        button.text = if (runAnalysis) "STOP" else "START"
+
+        if (!runAnalysis) {
+            triggers = 0
+        }
     }
 
     private fun level1Drowsiness() {
-        val now= Calendar.getInstance()
-        val hour=now.get(Calendar.HOUR_OF_DAY)
+        val now = Calendar.getInstance()
+        val hour = now.get(Calendar.HOUR_OF_DAY)
         Logs.logLevel2Drowsiness(hour)
-        val mMediaPlayer = MediaPlayer.create(this, ALARMLIST[alarm])
-        mMediaPlayer!!.isLooping = false
-        mMediaPlayer!!.start()
 
+        CoroutineScope(Dispatchers.IO).launch {
+            val mMediaPlayer = MediaPlayer.create(this@MainActivity, ALARMLIST[alarm])
+            mMediaPlayer.isLooping = false // Disable looping to stop after 5 seconds
+            mMediaPlayer.start()
 
+            // Wait for 5 seconds before stopping the music
+            delay(5000)
 
-
+            if (mMediaPlayer.isPlaying) {
+                mMediaPlayer.stop()
+                mMediaPlayer.release()
+            }
+        }
     }
 
+
     private fun level2Drowsiness() {
-        val now= Calendar.getInstance()
-        val hour=now.get(Calendar.HOUR_OF_DAY)
+        val now = Calendar.getInstance()
+        val hour = now.get(Calendar.HOUR_OF_DAY)
         Logs.logLevel3Drowsiness(hour)
 
         val gmmIntentUri: Uri = Uri.parse("geo:0,0?q=$directionsTo")
@@ -280,9 +300,9 @@ class MainActivity : AppCompatActivity() {
         override fun analyze(image: ImageProxy) {
             if (runAnalysis) {
                 val inputMediaImage = image.image
-                val inputBitmap=image.toBitmap()
+                val inputBitmap = image.toBitmap()
                 if (inputMediaImage != null) {
-                    val FBimage =InputImage.fromMediaImage(
+                    val FBimage = InputImage.fromMediaImage(
                         inputMediaImage,
                         image.imageInfo.rotationDegrees
                     )
@@ -312,7 +332,7 @@ class MainActivity : AppCompatActivity() {
                                             if ((currentClassTime - lastClassTime) > 3) {
                                                 lastClassTime = currentClassTime
                                                 triggers += 1
-                                                triggerLabel.text = "Triggers=$triggers"
+                                                triggerLabel.text = "$triggers"
                                                 if (triggers == triggerLimit) {
                                                     triggers = 0
                                                     level2Drowsiness()
@@ -321,8 +341,10 @@ class MainActivity : AppCompatActivity() {
                                                 } else level1Drowsiness()
 
 
-                                            }}}}
-                                catch (e: java.lang.Exception) {
+                                            }
+                                        }
+                                    }
+                                } catch (e: java.lang.Exception) {
                                     Log.d("Exception", e.toString())
                                 }
 
@@ -335,42 +357,41 @@ class MainActivity : AppCompatActivity() {
                             Log.d("ERROR", e.toString())
                             image.close()
                         }
-                }else image.close()
+                } else image.close()
 
-            }else image.close()
+            } else image.close()
 
 
         }
     }
 
-        fun ImageProxy.toBitmap(): Bitmap {
-            val yBuffer = planes[0].buffer // Y
-            val uBuffer = planes[1].buffer // U
-            val vBuffer = planes[2].buffer // V
+    fun ImageProxy.toBitmap(): Bitmap {
+        val yBuffer = planes[0].buffer // Y
+        val uBuffer = planes[1].buffer // U
+        val vBuffer = planes[2].buffer // V
 
-            val ySize = yBuffer.remaining()
-            val uSize = uBuffer.remaining()
-            val vSize = vBuffer.remaining()
+        val ySize = yBuffer.remaining()
+        val uSize = uBuffer.remaining()
+        val vSize = vBuffer.remaining()
 
-            val nv21 = ByteArray(ySize + uSize + vSize)
+        val nv21 = ByteArray(ySize + uSize + vSize)
 
-            yBuffer.get(nv21, 0, ySize)
-            vBuffer.get(nv21, ySize, vSize)
-            uBuffer.get(nv21, ySize + vSize, uSize)
+        yBuffer.get(nv21, 0, ySize)
+        vBuffer.get(nv21, ySize, vSize)
+        uBuffer.get(nv21, ySize + vSize, uSize)
 
-            val yuvImage = YuvImage(nv21, ImageFormat.NV21, this.width, this.height, null)
-            val out = ByteArrayOutputStream()
-            yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 100, out)
-            val imageBytes = out.toByteArray()
-            return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-        }
+        val yuvImage = YuvImage(nv21, ImageFormat.NV21, this.width, this.height, null)
+        val out = ByteArrayOutputStream()
+        yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 100, out)
+        val imageBytes = out.toByteArray()
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+    }
 
-        fun RotateBitmap(source: Bitmap, angle: Float): Bitmap? {
-            val matrix = Matrix()
-            matrix.postRotate(angle)
-            return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
-        }
-
+    fun RotateBitmap(source: Bitmap, angle: Float): Bitmap? {
+        val matrix = Matrix()
+        matrix.postRotate(angle)
+        return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, true)
+    }
 
 
     override fun onDestroy() {

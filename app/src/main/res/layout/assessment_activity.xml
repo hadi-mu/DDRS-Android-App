@@ -1,85 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#BEC80000">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF"
+    android:gravity="center"> <!-- Center the content -->
+
+    <!-- Drowsiness Indicator -->
+
+    <!-- Question TextView -->
+    <TextView
+        android:id="@+id/readinessIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="NOT READY TO DRIVE"
+        android:textAlignment="center"
+        android:textColor="#FF0000"
+        android:textSize="48sp" />
 
     <TextView
         android:id="@+id/qText"
-        android:layout_width="322dp"
-        android:layout_height="60dp"
-        android:background="#FFFFFF"
-        android:text="What is 24+32?"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.471"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.196" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="What is 5 + 5?"
+        android:textAlignment="center"
+        android:textColor="#000000"
+        android:textSize="34sp" />
 
+    <!-- Answer Entry EditText -->
     <EditText
         android:id="@+id/answerInput"
-        android:layout_width="322dp"
-        android:layout_height="89dp"
-        android:layout_margin="0dp"
-        android:background="#FFFFFF"
-        android:backgroundTint="#FFFFFF"
-        android:hint="Enter your answer"
-        android:inputType="text"
-        android:textSize="36sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.473"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.361" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:background="@android:drawable/edit_text"
+        android:hint="Type your answer here"
+        android:padding="10dp"
+        android:textAlignment="center"
+        android:textSize="24sp" />
 
+    <!-- Submit Button -->
     <Button
-        android:id="@+id/checkBtn"
-        android:layout_width="172dp"
-        android:layout_height="56dp"
-        android:layout_marginBottom="328dp"
-        android:onClick="checkAnswer"
-        android:text="Check"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.803"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:id="@+id/submit_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Submit"
+        android:padding="10dp"
+        android:textSize="16sp"
+        android:onClick="checkAnswer"/>
 
-    <TextView
-        android:id="@+id/titleText"
-        android:layout_width="256dp"
-        android:layout_height="60dp"
-        android:background="#FFFFFF"
-        android:text="ASSESSMENT"
-        android:textAlignment="center"
-        android:textSize="36sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.053" />
-
-    <TextView
-        android:id="@+id/readinessIndicator"
-        android:layout_width="347dp"
-        android:layout_height="97dp"
-        android:layout_marginBottom="92dp"
-        android:background="#FFFFFF"
-        android:text="NOT READY TO DRIVE YET"
-        android:textAlignment="center"
-        android:textSize="36sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.462"
-        app:layout_constraintStart_toStartOf="parent" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

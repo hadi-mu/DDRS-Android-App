@@ -30,7 +30,6 @@ class LogTools (private val context: Context){
         editor.apply()
     }
     fun updateLogs(){
-        Log.d("Update","ing")
         val level2LogInputStream=context.openFileInput("level2Log.txt")
         val level3LogInputStream=context.openFileInput("level3log.txt")
         val level2InputStreamReader=InputStreamReader(level2LogInputStream)
@@ -44,14 +43,14 @@ class LogTools (private val context: Context){
         if (level2Text.length>20){
             i=0
             start=0
-        while(i<level2Text.length){
-            if (level2Text[i]==','){
-                level2Array.add(level2Text.substring(start,i))
-                start=i+1
-                i+=1
-            }else{
-                i+=1
-            }}
+            while(i<level2Text.length){
+                if (level2Text[i]==','){
+                    level2Array.add(level2Text.substring(start,i))
+                    start=i+1
+                    i+=1
+                }else{
+                    i+=1
+                }}
         }
         else{
             for(x in 1..24){
@@ -75,7 +74,7 @@ class LogTools (private val context: Context){
             }
 
 
-    }}
+        }}
 
 
 

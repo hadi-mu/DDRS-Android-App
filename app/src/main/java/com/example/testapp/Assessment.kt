@@ -26,15 +26,15 @@ class Assessment: AppCompatActivity() {
         when (correctAnswers) {
             0 -> {
                 q = easyQuestion()
-                layout.setBackgroundColor(Color.RED)
+                readinessIndicator.setTextColor(Color.RED)
             }
             1 -> {
                 q = mediumQuestion()
-                layout.setBackgroundColor(Color.RED)
+                readinessIndicator.setTextColor(Color.RED)
             }
             2 -> {
                 q = hardQuestion()
-                layout.setBackgroundColor(Color.RED)
+                readinessIndicator.setTextColor(Color.RED)
             }
             3 -> readyToDrive()
         }
@@ -44,8 +44,8 @@ class Assessment: AppCompatActivity() {
 
 
     private fun readyToDrive() {
-        readinessIndicator.text = "READY TO DRIVE!"
-        layout.setBackgroundColor(Color.GREEN)
+        readinessIndicator.text = "READY TO DRIVE"
+        readinessIndicator.setTextColor(Color.GREEN)
     }
 
     fun checkAnswer(V: View) {
